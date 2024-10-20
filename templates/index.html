@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/production.css') }}">
+    <title>Interactive Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .graph-placeholder {
+            width: 800px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0; /* Removed margin */
+        }
+        .graph-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .bottom-panel {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            margin-top: 5px; /* Reduced margin-top to minimize the gap */
+        }
+        .circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: white;
+            border: 3px solid #ff4d4d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 10px; /* Reduced vertical margin */
+            cursor: pointer;
+            color: #ff4d4d;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .circle:hover {
+            background-color: #ffe0e0;
+            color: #ff3333;
+        }
+        .circle.selected {
+            background-color: #ff9900;
+            color: white;
+            border-color: #ff9900;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <head>
+        <!-- Meta -->
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <title>MCwithMC</title>
+        <meta name="description" content="">
+
+        <!-- The compiled CSS file -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/production.css') }}">
+
+        <!-- Web fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Karla:400,700" rel="stylesheet">
+
+        <!-- favicon.ico. Place these in the root directory. -->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    </head>
+    <body class="has-animations">
+    <!-- Header -->
+    <header class="pt2 pb1 align--center">
+        <div class="container">
+            <h2 style="color: #fb8500;">Predicting Housing Prices</h2>
+            <h1>A Use Case in Monte Carlo Markov Chain and Multilinear Regression</h1>
+        </div>
+    </header>
+    <!-- Body -->
+    <main>
+        <div class="container">
+
+            <!-- Info -->
+            <section class="grid-row grid-row--center">
+                <p><strong style="color: #023047;">Welcome, knowledge seekers!</strong> <br>We will be analyzing a dataset that aims to prove statistical significance of the following potential predictors in determining housing prices over 100 observations:</p>
+                <ul style="margin-left: 1rem;">
+                    <li>Wood Deck Area in sqft</li>
+                    <li>Open Porch Area in sqft</li>
+                    <li>Total Basement Area in sqft</li>
+                    <li>Year Sold</li>
+                    <li>Month Sold</li>
+                </ul>
+                <br>
+            <!-- Leahs part-->    
+                <!-- An Introduction to Monte Carlo: A Friend to Linear Regression -->
+                <h3><br>An Introduction to Monte Carlo: A Friend to Linear Regression <br></h3>
+                <!-- leahs introduction-->
+                <div style="display: flex; align-items: center; justify-content: flex-start;padding: 1rem 0;">
+                    <img src="{{ url_for('static', filename='img/jarvin4.png') }}" alt="Leah" style="width: 100px; margin-right: 10px;">
+                    <span p>My name is Leah and I'll be introducing you to the dataset, as well as teaching a bit about Monte Carlo.</p>
+                </div>
+                
+                <p>In performing statistical analysis, we are bound to run into some impediments, whether its limited resources or noisy raw data. That's where tools such as Monte Carlo Markov Chain come in handy.</p><br>
+                <p>
+                    At a high level, Monte Carlo is used to simulate observations based on real data and estimate a single parameter. It was created as a means to combat the Monte Carlo or gambler's fallacy, a cognitive bias where a person believes that an event that hasn't happened in some time is more likely to manifest in the future.
+                </p>
+                <div class="grid-column span-half pt3 pb3 mobile-m order-1 reveal-on-scroll is-revealing" >
+                    <div class="relative">
+                        <img class="info-image relative z2" src="{{ url_for('static', filename='img/casino-de-monte-carlo-700x445-min.jpg') }}" alt="montecarlo">
+                    </div>
+                </div>
+                <div class="grid-column span-half pt3 pb3 mobile-m order-2">
+                <p>
+                    The term actually refers to an infamous night in 1913 at the Monte Carlo Casino where the roulette wheel spun black 26 times in succession. Patrons of the casino believed the chances of getting red increased as the wheel continued to fall on the black and reportedly lost millions from this misconception.
+                </p>
+                </div>
+                <p>
+                    By running multiple independent simulations based on real-life sample data, we gain a more informed view of the random variable and increase our likelihood of achieving the true value of a population parameter using sample data, per the Law of Large Numbers.
+                </p>
+                <br>
+                <p>
+                    Monte Carlo simulations provide a solution for the real-life constraints that statistical studies may face. The typical data scientist does not have unlimited resources to continuously run experiments or polls to extract data from. Also consider situations where certain events of study are too rare to collect real data on. Monte Carlo is formulated however to mimic the patterns seen in this real-life data and provide more input data for statistical study.
+                </p><br>
+                <p>
+                    Herein lies the connection between Monte Carlo and regression. The model we create using linear regression is created, evaluated, and improved using sample data- the more data we have, the smarter (i.e. more accurate) our regression model can become!
+                </p>
+                <!--Monte Carlo Process-->
+                <h3><br>Monte Carlo Process<br></h3>
+                <p>
+                    To get started, we must first choose a distribution that aligns to our dataset. Since we have over 100 houses in our dataset, we can reasonably assume use of the random normal distribution by way of the Central Limit Theorem. In cases where the distribution is unclear however, you may argue for use of the random normal distribution by the asymptotic assumption. Other common options are the empirical, triangular, and uniform distributions.
+                </p><br>
+                <p>
+                    The distribution we choose determines how we calculate our observations. For calculating a normal distribution in python, we can assign mean and standard deviation observed in the real-life data set. You may select the number of observations according to your model needs, with common integrals being 100, 1000, or 10000 observations.
+                </p><br>
+                <p>
+                    The resulting dataset is again dependent on the distribution chosen. For our dataset, we see a symmetric bell curve, with 99.7% of observations found within 3 standard deviations from the mean per the Empirical Rule.
+                </p>
+                <!--Monte Carlo Shortcomings-->
+                <h3><br>Monte Carlo Shortcomings<br></h3>
+                <p>
+                    Standard Monte Carlo is a reliable tool to help train statistical models, but we will need a more advanced version of this tool to calculate multiple parameters for our housing dataset. We will explore this further with Markov Chain Monte Carlo, which not only provides additional volume but also aims to help mitigate issues of multicollinearity, interpretability, and missing value imputation.
+                </p><br>
+            <!-- jarvins part-->
+                <div style="display: flex; align-items: center; justify-content: flex-start;padding: 1rem 0;">
+                    <img src="{{ url_for('static', filename='img/jarvin1.png') }}" alt="Leah" style="width: 100px; margin-right: 10px;">
+                    <span p>Thanks for a great start, Leah. I'll take over for this next bit.</p>
+                </div>
+                <p>
+                    Born in the summer of 1856, Andrey Markov would become a big deal in the world of mathematics. Andrey's work encompassed fields of mathematics such as probability theory, statistics, and differential calculus. He also was a pretty good chess player to boot! Markov's main research would eventually lead to a process called the Markov Chain. His discovery was published in 1906, and has been influential in the fields of probability since then.
+                </p>
+                <div class="grid-column span-half pt3 pb3 mobile-m order-1 reveal-on-scroll is-revealing" >
+                    <div class="relative">
+                        <img class="info-image relative z2" src="{{ url_for('static', filename='img/chess1.png') }}" alt="chess1">
+                    </div>
+                </div>
+
+                <div class="grid-column span-half pt3 pb3 mobile-m order-2">
+                <p>
+                    Before we get to a formal definition of Marko Chains, let's take a look at one of Markov's interests, chess, and apply his research to it. In chess, pieces from each opponent are placed on the board. We'll refer to this particular configuration of the pieces as a 'state'. 
+                </p>
+                <p>
+                    <br>Here, we have a chess board in the very first state. If we were to move any of the pieces, it would be in a new 'state'. 
+                </p>
+                </div>
+                <p>
+                    There are many different states in chess, over 10^40. If you want to win, it would help if you knew what your opponent was going to do next. That means knowing the probability of going from one state to another would give you an advantage. If each piece were equally likely to move, then that would be a uniform transition probability. Let's assume we're playing white for the rest of this chess example. The probability that we take pawn to a3, vs. pawn to a4, or even knight to f3 are all equally likely under uniform transition probability.
+                </p>
+                <div class="grid-column span-half pt3 pb3 mobile-m order-1 reveal-on-scroll is-revealing" >
+                    <div class="relative">
+                        <img class="info-image relative z2" src="{{ url_for('static', filename='img/chess2.png') }}" alt="chess1">
+                    </div>
+                </div>
+
+                <div class="grid-column span-half pt3 pb3 mobile-m order-2">
+                <p>
+                    If your opponent has a better strategy than just randomly picking a piece, you might assign certain pieces a higher chance of being moved.
+In this example, we have just moved our knight to c6, leading to a discovered check against black. Black must legally move his king and only has three options: d7, d5, or e6. In a uniform distribution, each option would be equally likely; however, our opponent (black) would most likely learn at this point that moving to d7 would most likely lead to another discovered check.
+                </p>
+                </div>
+                <p>
+                    We as observers could possibly view this judgment as a heuristic approach. Heuristic means in a manner following principles that 'generally' lead to winning, like capturing other pieces, controlling more area, or not putting yourself into easily check-able positions.
+                </p>
+                <p><br>
+                    Another way to determine the transition probability is to employ a data driven approach. We can do this by looking at all data from grandmasters across the world, then determine the transition probability based on other specific moves made in either the same or similar states.
+                </p>
+            <!-- Markov chain explaination-->
+                <h3>
+                    <br>Now, let's abstract a little now and formally go over what Markov Chains are:
+                </h3>
+                <p>
+                    “A Markov chain is a mathematical system that experiences transitions from one state to another according to certain probabilistic rules. The defining characteristic of a Markov chain is that no matter how the process arrived at its present state, the possible future states are fixed. In other words, the probability of transitioning to any particular state is dependent solely on the current state and time elapsed.” - Brilliant.org<br>
+                </p>
+                <p>
+                    <br>This definition covers an idea that some would say is the cornerstone of Markov chains, that is its memory-less state. Markov chains will indiscriminately look at the current state something is in and make judgments from there. Depending on the application, this may be a useful feature.
+                <br>
+                </p>
+                <p>
+                    <br>Let's look at another example. Since we spoke earlier about gambling, let's look at a very simple gambling game. Say we have a fair coin, and you can bet a $1 on it being heads or tails. Your outcomes in this game are either you win or you lose, gaining or losing a dollar.
+
+                </p>
+                <p>
+                    <br>If we come back to you an hour later and you're still playing the game, but you're now at $23, we can effectively say what the next possible state is; you'll be either at $24, or $22. We don't need to know how many times you won, or how many times you lost, either way, your current net is $23, and we can say you've got a 50% chance of going to either state.<br>
+                </p><br>
+                <div style="text-align: center; padding: 1rem;">
+                    <img src="{{ url_for('static', filename='img/dollars.png') }}" alt="dollars summary" >
+                </div>
+                <p>
+                    However, the strength of Markov Chains can also be its weakness. Memorylessness depends only on the current state/space. It is completely possible for other models that do a more summative approach to be more accurate in their analyses more often. If history or long-term pieces of information matter, maybe think of not applying a Markov Chain.
+                </p>
+                <p>
+                    <br>Another weakness of the Markov Chain is stationarity in the data. Let's take, for example, the weather. You could draw up a simple transition probability that on a sunny day, you have a 10% chance of rain, and a 90% chance of sun the following day. And on a rainy day, there's a 50% chance of it being rainy tomorrow, while going back to sunny is also 50%. The overall transition space is represented in the following Markov Chain Model Matrix:
+                </p>
+                <div style="text-align: center; padding: 1rem;">
+                    <img src="{{ url_for('static', filename='img/sunnyrainy.png') }}" alt="sunnyrainy example" >
+                </div>
+                <p>
+                    <br>This model may be pretty accurate in the Spring and Summer. But when Fall rolls around, the transition state is no longer described accurately. It may be that going from sunny to sunny is only a 50/50. This lack of being able to adjust for a different overarching factor is part of the stationarity in data assumption.
+                </p>
+                <p>
+                    <br>One of the last downsides we'll look at for Markov Chains is its lack of explainability. Take for example a car and the transition probabilities of it breaking down. You know that when it's not being used, everything is fine. When you drive it on sunny days, no problems, but driving it on cold rainy days, it has a 10% chance of it breaking down. This model cannot tell you why rainy days cause your vehicle to break down more often, or even at all. In order to do that, you might need to take the car to a mechanic, not look at its transition space probability.
+                </p>
+                <p>
+                    <br>By itself, Markov Chains have more assumptions than simpler models, like Linear Regression. When you combine it with aspects from Monte Carlo, you end up with a more robust model that is able to combat some of the shortcomings standard Markov Chains retain. This interaction between the two is aptly named the Markov Chain Monte Carlo. 
+                </p>
+                <p>
+                    <br>The Monte Carlo aspect is actually captured by taking a more Bayesian approach to utilizing Markov Chains. Here's a short example of what it means to take a more Bayesian approach.
+                </p>
+                <p>
+                    <br>There is a television series called 'Storage Wars' that follows people who are interested in bidding for ownership to storage lockers that are no longer being paid for. Say that you're a person interested in bidding for one of these lockers.
+                </p>
+                <p><br>Before you bid, you may have a preconceived notion or idea of what is inside the lockers. These notions could be influenced by things like the following:</p>
+                <ul style="margin-left: 1rem;">
+                    <li>What are the types of people that would use these lockers in the first place?</li>
+                    <li>What is the demographic for the people here?</li>
+                    <li>What are the storage borrowing trends of people in this area?</li>
+                    <li>What is the location/income/trends/state of the location?</li>
+                    <li>What are some of the attributes associated with these storage units?</li>
+                    <li>What is the size of the locker unit?</li>
+                    <li>What is legally allowed to be stored in these locker units?</li>
+                    <li>Where are the locker units, geographically speaking?</li>
+                    <li>What state of maintenance are these lockers in?</li>
+                </ul>
+                <p>These are just a few examples of things that could influence your thoughts on what these lockers may contain. In Bayesian statistics, these thoughts and ideas are called priors. Your priors can be as rigorous as checking into the answers for the questions labeled above, as summative as looking at the current rates for renting a unit and multiplying by an arbitrary number, or as simple as saying at least $50 because you felt like it.</p>
+                <p><br>In the case of Storage Wars, the auctioneers entice people to throw down big money at the units by giving them a sneak peak at what's inside the storage units. They open the sliding doors just wide enough for the bidders to see some items. During this part of the process, you might see some key items. Maybe you see a big screen TV, a few boxes that look filled, and a broken floor lamp. This gives you some insights on how much the whole unit may be worth. The auctioneers have allowed you to collect data.</p>
+                <div class="grid-column span-half pt3 pb3 mobile-m order-1 reveal-on-scroll is-revealing" >
+                    <div class="relative">
+                        <img class="info-image relative z2" src="{{ url_for('static', filename='img/storage.png') }}" alt="storagewars">
+                    </div>
+                </div>
+
+                <div class="grid-column span-half pt3 pb3 mobile-m order-2">
+                <p>
+                    You take this collected data and determine the chances of seeing these items inside the storage unit, as well as what other items may be in the unit, given what you saw. Assign a projected price to the storage unit from the data you collected previously, then ask yourself, “What is the probability that this stuff shows up, given my priors?”
+                </p>
+                </div>
+                <p>
+                    <br>This process helps determine your likelihood. Likelihood is utilizing data to see what the probability is of what you saw in the data would come up, given your prior conceived notions.
+                </p>
+                <p>
+                    <br>With your collected data and assessment of the likelihoods for certain items, you might think to change your original offer. Perhaps you came to the conclusion that this storage unit was initially worth $500, but seeing that broken lamp drops your price estimate for everything else to a cool $300. Or, maybe you think it's a bit more than $50 upon seeing that big screen TV. Maybe seeing that box in conjunction with the TV makes you think there are valuable video games in there, bringing your estimated total to around $1000. In all these cases, you are updating your prior/ creating your posterior.
+                </p>
+                <p>
+                    <br>In summary, Bayesian statistics is all about adjusting your priors after you see some data, then using probability distributions to show how confident you are.
+                </p>
+                <p>
+                    With Bayesian statistics now under our tool belt, let's combine it with the Markov Chain process to create the Markov Chain Monte Carlo (MCMC) model.
+                </p>
+                <div class="grid-column span-half pt3 pb3 mobile-m order-1 reveal-on-scroll is-revealing" >
+                    <div class="relative">
+                        <img class="info-image relative z2" src="{{ url_for('static', filename='img/store.png') }}" alt="stores">
+                    </div>
+                </div>
+
+                <div class="grid-column span-half pt3 pb3 mobile-m order-2">
+                <p>
+                    You've moved to a new area and it has a restaurant row, but you want to figure out which restaurant is the best out of the 7 that are all next to each other. Here's a possible way to determine which one is best:
+                </p>
+                </div>
+
+                <ol style="margin-left: 1rem;">
+                    <li>
+                        Start at a random restaurant. Let's say you ate at restaurant #3. Rate them on a scale of 1 - 10.
+                    </li>
+                    <li>
+                        Flip a coin to determine which restaurant to go to next: heads goes down to restaurant #2, while tails leads to restaurant #4. Allow for wrapping around, for going from #1 to #7 and vice versa.
+                    </li>
+                    <li>
+                        Was the restaurant you just ate at better than the previous one? If so, by how much? If it was better by a good enough degree, you should go here again. If it wasn't better by that much, flip the coin again to determine which way you go. This combination of flipping coins and comparing whether the current restaurant was better than only the previous one helps determine your transition probability!
+                    </li>
+                    <li>
+                        Continue this process to sample different places you've eaten at. By the way steps 2 and 3 work out, you will end up eating at the restaurants you like more often.
+                    </li>
+                </ol>
+                <div style="text-align: center; padding: 1rem;">
+                    <img src="{{ url_for('static', filename='img/graphs.png') }}" alt="graph example" >
+                </div>
+                <p>
+                    This process has now combined all the topics we've learned thus far. In steps 2 and 3 above, we employed the Markov Chain aspect, by going from one space to another without any regard for what happened previously. In steps 4 and 5, we do a Monte Carlo/ Bayesian approach via sampling. We now can look at the distribution of where we have frequented to determine what is most favorable overall. One of the best parts about this is that we don't necessarily need to eat at each of the restaurants the same number of times:, we don't even need to eat at all the restaurants in general. 
+                </p>
+                <div style="text-align: center; padding: 1rem;">
+                    <img src="{{ url_for('static', filename='img/inital-rejected.png') }}" alt="graph example" >
+                </div>
+                <p>
+                    <br>On a more technical level, MCMC performs inference for distributions through sampling, and makes decisions for its next sample chain using a Markov Chain transition probability. Eventually, these chains should converge on the desired quantity we wish to infer.
+                </p>
+                <div style="display: flex; align-items: center; justify-content: flex-start;padding: 1rem 0;">
+                    <img src="{{ url_for('static', filename='img/jarvin2.png') }}" alt="Leah" style="width: 100px; margin-right: 10px;">
+                    <span p>Let's throw it back to Leah, so she can teach us about Multivariate Regression.                    </p>
+                </div>
+                <!-- Multivariate Regression Review -->
+                <h3><br>Multivariate Regression Review<br></h3>
+                <p>
+                    Now that our input data has been strengthened with MCMC, we are in a position to create a linear regression model to predict housing age. Notice here that we will be using linear regression as opposed to logistic regression, since we aim to explain a continuous random variable.
+                </p>
+                <p>
+                    <br>In simple linear regression, we select a single variable “x” as a predictor and create a function where “x” aims to explain the behavior in the outcome variable “y” (prediction age in our case) using a linear model. While SLR provides us with a strong basis, it is limited in its ability to explain more complex behaviors. That's where a multivariate approach comes in!
+                </p>
+                
+                <h2>MLR Model - Assumptions Check</h2>
+                <p>Now that we've regressed age to our predictors, we need to confirm that the following model assumptions hold true:</p>
+                <ul style="margin-left: 1rem;">
+                    <li>There is a linear relationship between the age and our predictors.</li>
+                    <li>Residuals are independent of one another.</li>
+                    <li>Residuals have a consistent variance (i.e. exhibit homoscedasticity).</li>
+                    <li>Variables are independent of one another (i.e. do not exhibit multicollinearity).</li>
+                    <li>Residuals follow an approximately random normal distribution.</li>
+                </ul>
+                <p>
+                    *The first 4 assumptions listed meet the requirement for a basic model, while the final assumption meets the requirement for a classical model. While not required to fit data to a regression model, this assumption does allow for the inferential statistics (i.e. confidence/prediction intervals and hypothesis testing) explored later on!
+                </p>
+                <h3>
+                    <br>F-Tests
+                </h3>
+                <p>
+                    As the name suggests, a multivariate regression model incorporates multiple predictors to explain the behavior for some random outcome. This comes with its own intricacies however- we not only have to confirm that each individual predictor is a statistically significant predictor but also that the selected combination of predictors in the model is statistically significant in predicting the model outcome.
+                </p>
+                <p> 
+                    <br>F tests are valuable tools to understand this exact concept. Let's reference the F statistics provided in the graph below with the corresponding F* critical values. By comparing these two values in a hypothesis test, we can determine statistical significance. For example, the F-statistic for nearly all of the listed predictors is above the F* value, providing us with the evidence we need to reject the null hypothesis and claim these as significant predictors!
+                </p>
+                <h3>
+                    <br>Coefficient of Determination
+                </h3>
+                <p>
+                    The R2 value represents the percentage of variability in y that can be explained by our linear model. As we add predictors, regardless of their utility in predicting housing price, R2 will only ever increase because it is based on SSR. SSR measures the sum of squared differences between Y-hat and Y-bar, so even any negative differences between these 2 values would only serve to increase SSR and R2 as a result.
+                </p>
+                <p> 
+                    <br> For this reason, for a more accurate representation of the explanation of y's behavior by our model, we may reference the R2 adj model. It scales our original R2s values by the degrees of freedom of the residual (n - p - 1), as seen in the formula below.
+                </p>
+                <p>
+                    <br>Let's have some fun with our interactive map. Try adding different predictors to our model and see how it impacts the R2adj  values to get a picture of how each predictor impacts the overall model explainability.
+                </p>
+                <p ><span>R</span><span >2 </span><span>= 1 - SSR/SST</span></p>
+                <p ><span><br>R</span><span >2</span><span >adj</span>
+                <span>= 1 - (1-R</span><span >2</span><span>) (n-1)/(n-p-1)</span></p>
+                
+                 <div style="display: flex; align-items: center; justify-content: flex-start;padding: 1rem 0;">
+                    <img src="{{ url_for('static', filename='img/jarvin4.png') }}" alt="Leah" style="width: 100px; margin-right: 10px;">
+                    <span p>Phew! Now that that's out of the way, let's have Jarvin bring it together for us.
+                    </p>
+                </div>
+                <h3>
+                    Putting it all together
+                </h3>
+                <p>
+                    Lastly, let us take a look at applying Markov Chain Monte Carlo to multilinear regression.
+                </p>
+                <p>
+                    In regular multilinear regression, we are trying to give a definitive calculation for the value of each of our predictors. We try to determine the coefficients,   betas, of each of our predictors. For each of these predictors, we can conduct hypothesis tests to determine how significant and accurate each of our predictors are.When applying MCMC, we opt for a more Bayesian approach, where instead of claiming a specific value, we claim that a beta will have a certain posterior probability distribution. Here's the steps for doing so in a bit more detail:
+                </p>
+                <ol style="margin-left: 1rem;">
+                    <li>
+                        Determine our priors: In general, we're going to come up with the distribution for what we think each of our predictors' coefficients should be. Maybe Beta1 is normally distributed around 55, with a variance of 11.2, while Beta2 is normally distributed around 10, with a variance of 0.05. This is coming up with our priors.
+                    </li>
+                    <li>
+                        We also need to come up with our likelihood here. That is to say, what is the probability of observing the data we have, given our model and the parameters we've described.
+                    </li>
+                    <li>
+                        Design our posterior: What should our model do once it ingests the actual data and calculates the likelihood of it, given the prior? Should it update the prior, turning it into a posterior? This is similar to designing the threshold of how much better tasting a restaurant was and deciding to move on to a different one or not.
+                    </li>
+                    <li>
+                        Sample many iterations of this process, and observe where the posterior distributions converge towards.
+                    </li>
+                    <li>
+                        Summarize the posterior distributions, describing them using the mean and variance, or any other parameters that are relevant to your specific use case.
+                    </li>
+                </ol>
+                <p>
+                    <br>Let's bring it back to a familiar dataset, like our housing data. We're trying to predict the prices of houses based on two predictors: X1 being square footage, and X2 being the number of bedrooms. We have around 100 rows of observed data with varying prices. Also, for multi-linear regressions' sake, let's assume we don't violate any of its assumptions.
+                </p>
+                    <ol style="margin-left: 1rem;">
+                        <li>
+                            Determine our priors. We need to determine what type of distributions our parameters could have. Maybe we observe that most of the houses we look at start at around $400,000, so having an intercept/ 𝛽0 ~ N(200,000, 20,000). For 𝛽1 ~ (0, 100), and 𝛽2 ~ N(0, 100). Ideally, you'd have an industry expert help you come up with accurate priors, which could possibly help you converge to the proper distribution sooner. If you don't have an industry expert to help you determine these, you could always run a simpler model to figure it out, like using regular multi-linear regression to determine a good starting point for your priors.
+                        </li>
+                        <li>
+                            Compute the likelihood of our priors being the correct distribution, given the data we are going to ingest.
+                        </li>
+                        <li>
+                            Set off multiple series of Markov Chains and start drawing samples. You can set how many times to run a chain for- 10 steps, 100 steps, it's your call. More steps increases the time complexity. Going back to our restaurant example, this is similar to eating at restaurants more often to determine the best restaurant.
+                        </li>
+                        <li>
+                            Sample from the posterior distributions. After your chains have concluded their allocated number of steps, sample from the posterior distributions. Determine how many samples you'd like to draw from.
+                        </li>
+                        <li>
+                            Estimate the posterior mean (or median) for credible intervals of your 𝛽0, 𝛽1, and 𝛽2.
+                        </li>
+                    </ol>
+                <p>
+                    That's a crash course on MCMC with a bit of Bayesian inference thrown in for good measure!
+                </p>
+                <h3>
+                    <br>Final Model Selection
+                </h3>
+                <p>
+                    Our final model will be…up to you! Use the interactive graph to compare the findings using MLR vs MCMC according to the pointers we've given. Good luck and happy knowledge seeking!
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Graph Placeholder -->
+    <div class="graph-placeholder">
+        <img id="graph" src="" alt="Graph will appear here">
+    </div>
+
+    <!-- Bottom Panel -->
+    <div class="bottom-panel">
+        {% for i in indicies %}
+            {% if i == 0 %}
+                <div class="circle selected" id="{{ independent_vars[i] }}" onclick="toggleSelection(this, '{{ independent_vars[i] }}')">{{ variable_names[i] }}</div>
+            {% else %}
+                <div class="circle" id="{{ independent_vars[i] }}" onclick="toggleSelection(this, '{{ independent_vars[i] }}')">{{ variable_names[i] }}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Footer -->
+    <footer class="pt2 pb2">
+        <div class="container align--center">
+            <h3> References
+            </h3>
+            <ul style="margin-left: 1rem;text-align: left;">
+                <li><a href="https://medium.com/@tinonucera/bayesian-linear-regression-from-scratch-a-metropolis-hastings-implementation-63526857f191" target="_blank">https://medium.com/@tinonucera/bayesian-linear-regression-from-scratch-a-metropolis-hastings-implementation-63526857f191</a></li>
+                <li><a href="https://www.statlect.com/fundamentals-of-statistics/Markov-Chain-Monte-Carlo#:~:text=While%20%22classical%22%20Monte%20Carlo%20methods,generate%20sequences%20of%20dependent%20observations." target="_blank">https://www.statlect.com/fundamentals-of-statistics/Markov-Chain-Monte-Carlo</a></li>
+                <li><a href="https://sbfnk.github.io/mfiidd/mcmc_diagnostics.html#:~:text=Dealing%20with%20parameters%20with%20limited,parts%20of%20the%20parameter%20space." target="_blank">https://sbfnk.github.io/mfiidd/mcmc_diagnostics.html</a></li>
+                <li><a href="https://www.statlect.com/asymptotic-theory/empirical-distribution" target="_blank">https://www.statlect.com/asymptotic-theory/empirical-distribution</a></li>
+                <li><a href="https://www.statlect.com/glossary/realization-of-a-random-variable" target="_blank">https://www.statlect.com/glossary/realization-of-a-random-variable</a></li>
+                <li><a href="https://www.statlect.com/fundamentals-of-statistics/Markov-chains" target="_blank">https://www.statlect.com/fundamentals-of-statistics/Markov-chains</a></li>
+                <li><a href="https://www.bbc.com/future/article/20150127-why-we-gamble-like-monkeys" target="_blank">https://www.bbc.com/future/article/20150127-why-we-gamble-like-monkeys</a></li>
+                <li><a href="https://aws.amazon.com/what-is/monte-carlo-simulation/" target="_blank">https://aws.amazon.com/what-is/monte-carlo-simulation/</a></li>
+                <li><a href="https://towardsdatascience.com/monte-carlo-simulation-a-practical-guide-85da45597f0e" target="_blank">https://towardsdatascience.com/monte-carlo-simulation-a-practical-guide-85da45597f0e</a></li>
+                <li><a href="https://www.ibm.com/topics/monte-carlo-simulation#:~:text=In%20other%20words%2C%20a%20Monte,variable%20that%20has%20inherent%20uncertainty." target="_blank">https://www.ibm.com/topics/monte-carlo-simulation/</a></li>
+                <li><a href="https://statisticsbyjim.com/probability/monte-carlo-simulation/#:~:text=The%20Monte%20Carlo%20model%20itself,a%20distribution%20of%20simulated%20results." target="_blank">https://statisticsbyjim.com/probability/monte-carlo-simulation</a></li>
+                <li><a href="https://www.publichealth.columbia.edu/research/population-health-methods/markov-chain-monte-carlo#:~:text=MCMC%20procedures%20can%20be%20used,only%20on%20the%20previous%20value." target="_blank">https://www.publichealth.columbia.edu/research/population-health-methods/markov-chain-monte-carlo</a></li>
+                <li><a href="https://www.bookdown.org/rwnahhas/RMPH/mlr-collinearity.html" target="_blank">https://www.bookdown.org/rwnahhas/RMPH/mlr-collinearity.html</a></li>
+                <li><a href="https://www.researchgate.net/publication/236007265_Generalized_Collinearity_Diagnostics" target="_blank">https://www.researchgate.net/publication/236007265_Generalized</a></li>
+            </ul>
+        <p>Predicting Housing Prices - A Use Case in Monte Carlo Markov Chain and Multilinear Regression</p>
+        </div>
+    </footer>
+
+    <!-- Scroll reveal -->
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+
+    <!-- The compiled JavaScript file -->
+    <script src="{{ url_for('static', filename='js/production.js') }}"></script>
+    </body>
+</div>
+
+<!-- JavaScript for Button State Handling -->
+<script>
+    let selectedCategories = ['{{ independent_vars[0] }}']; // Initialize with the first category
+
+    window.onload = function() {
+        loadGraph(); // Load the graph when the page loads
+    };
+
+    function toggleSelection(element, categoryId) {
+        if (element.classList.contains("selected")) {
+            // Only allow deselection if there are more than one selected categories
+            if (selectedCategories.length > 1) {
+                element.classList.remove("selected");
+                selectedCategories = selectedCategories.filter(cat => cat !== categoryId);
+            }
+        } else {
+            element.classList.add("selected");
+            selectedCategories.push(categoryId);
+        }
+
+        // Load the graph if there's at least one selected category
+        if (selectedCategories.length > 0) {
+            loadGraph();
+        }
+    }
+
+    function loadGraph() {
+        fetch('/plot', {
+            method: 'POST',
+            body: JSON.stringify({ selectedCategories: selectedCategories }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.blob())
+        .then(imageBlob => {
+            const graphImg = document.getElementById('graph');
+            const imageUrl = URL.createObjectURL(imageBlob);
+            graphImg.src = imageUrl;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
+</body>
+</html>
